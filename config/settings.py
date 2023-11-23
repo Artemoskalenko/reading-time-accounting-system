@@ -1,6 +1,11 @@
+import os
 from pathlib import Path
 
 from celery.schedules import crontab
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -70,8 +75,12 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("POSTGRES_DB"),
+        "USER": os.getenv("POSTGRES_USER"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+        "HOST": os.getenv("POSTGRES_HOST"),
+        "PORT": os.getenv("POSTGRES_PORT"),
     }
 }
 
@@ -148,6 +157,6 @@ CELERY_TASK_TIME_LIMIT = 3600
 CELERY_BEAT_SCHEDULE = {
     "daily-collection-of-user-statistics": {
         "task": "book_reading.tasks.daily_collection_of_user_statistics",
-        "schedule": crontab(hour="20", minute="44"),
+        "schedule": crontab(hour="21", minute="25"),
     },
 }
