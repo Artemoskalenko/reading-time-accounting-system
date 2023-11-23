@@ -1,9 +1,11 @@
 import datetime
 
+from django.db.models import Sum
+
 from .models import ReadingSession, ReadingStatistics, UserStatistics
 
 
-def end_book_reading_session(session_id: int):
+def end_book_reading_session(session_id: int) -> None:
     """
     The function ends the book reading session, updates book reading statistics and general user statistics.
     """
@@ -42,3 +44,20 @@ def timedelta_to_string(timedelta):
     result = f'{hours} hours, {minutes} min {seconds} sec' if hours else f'{minutes} min {seconds} sec'
     return result
 
+
+def collect_user_reading_statistics(user_id: int, days: int):
+    """
+    Function for getting the total reading time of a user for a certain number of recent days
+    """
+    period_of_time = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=days)
+
+    total_duration = ReadingSession.objects.filter(
+        user_id=user_id,
+        start_time__gte=period_of_time
+    ).aggregate(
+        total_duration=Sum('duration')
+    )['total_duration']
+    if not total_duration:
+        total_duration = datetime.timedelta(hours=2)
+    print(f'total_duration == {total_duration}')
+    return total_duration

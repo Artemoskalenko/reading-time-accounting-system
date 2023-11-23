@@ -1,0 +1,44 @@
+version: "3.10"
+
+services:
+  redis:
+    image: redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+  reading-time-accounting-system:
+    tty: true
+    build: .
+    ports:
+      - "8000:8000"
+    links:
+      - redis
+    depends_on:
+      - redis
+
+  celery-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/app
+    user: root
+    command: >
+      sh -c "chown root:root db.sqlite3 && 
+             chmod 777 db.sqlite3 &&
+             python manage.py db_connection &&
+             celery -A config worker --loglevel=info"
+#    command: "celery -A config worker -l info"
+    depends_on:
+      - redis
+      - reading-time-accounting-system
+
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: "celery -A config beat -l INFO"
+    depends_on:
+      - redis
+      - reading-time-accounting-system

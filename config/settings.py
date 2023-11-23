@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from celery.schedules import crontab
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -9,7 +11,10 @@ SECRET_KEY = "django-insecure-30mdnn%t!!g@7aj41xu8-c*8c@d1qh-h%u%(^$o15ye$9r-ngh
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+]
 
 
 # Application definition
@@ -133,4 +138,16 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],
+}
+
+CELERY_BROKER_URL = "redis://redis:6379/0"
+CELERY_RESULT_BACKEND = "redis://redis:6379/0"
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 3600
+
+CELERY_BEAT_SCHEDULE = {
+    "daily-collection-of-user-statistics": {
+        "task": "book_reading.tasks.daily_collection_of_user_statistics",
+        "schedule": crontab(hour="20", minute="44"),
+    },
 }

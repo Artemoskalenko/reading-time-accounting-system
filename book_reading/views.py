@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Book, ReadingSession, ReadingStatistics
+from .models import Book, ReadingSession, ReadingStatistics, UserStatistics
 from .serializers import BookSerializer, BookWithoutFullDescriptionSerializer
 from .services import end_book_reading_session, timedelta_to_string
 
@@ -69,11 +69,19 @@ class UserStatisticsAPIView(APIView):
     def get(self, request):
         user = request.user
         total_reading_time = user.statistics.total_reading_time
+        try:
+            user_statistics = UserStatistics.objects.get(user=user)
+        except UserStatistics.DoesNotExist:
+            user_statistics = UserStatistics(user=user)
+        last_7_days_reading_time = user_statistics.last_7_days_reading_time
+        last_30_days_reading_time = user_statistics.last_30_days_reading_time
         return Response({
             'First name': user.first_name,
             'Last name': user.last_name,
             'Date joined': user.date_joined.strftime("%Y-%m-%d %I:%M %p"),
-            'Total reading time': timedelta_to_string(total_reading_time)
+            'Total reading time': timedelta_to_string(total_reading_time),
+            'Last 7 days reading time': timedelta_to_string(last_7_days_reading_time),
+            'Last 30 days reading time': timedelta_to_string(last_30_days_reading_time),
         })
 
 
