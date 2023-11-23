@@ -15,7 +15,6 @@ services:
       - "6379:6379"
 
   reading-time-accounting-system:
-    tty: true
     build: .
     volumes:
       - ./:/app
@@ -30,12 +29,7 @@ services:
   celery-worker:
     build:
       context: .
-      dockerfile: Dockerfile
-    user: root
-    command: >
-      sh -c "python manage.py db_connection &&
-             celery -A config worker --loglevel=info"
-#    command: "celery -A config worker -l info"
+    command: "celery -A config worker --loglevel=info"
     depends_on:
       - db
       - redis
@@ -44,7 +38,6 @@ services:
   celery-beat:
     build:
       context: .
-      dockerfile: Dockerfile
     command: "celery -A config beat -l INFO"
     depends_on:
       - db

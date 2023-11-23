@@ -15,9 +15,7 @@ def daily_collection_of_user_statistics() -> None:
     for user in users:
         last_7_days_reading_time = collect_user_reading_statistics(user_id=user.id, days=7)
         last_30_days_reading_time = collect_user_reading_statistics(user_id=user.id, days=30)
-        print(last_7_days_reading_time)
-        print(last_30_days_reading_time)
-        print(user.username)
+
         try:
             user_statistics = UserStatistics.objects.get(user=user)
         except UserStatistics.DoesNotExist:
@@ -25,8 +23,6 @@ def daily_collection_of_user_statistics() -> None:
 
         user_statistics.last_7_days_reading_time = last_7_days_reading_time
         user_statistics.last_30_days_reading_time = last_30_days_reading_time
-        print(user_statistics.last_7_days_reading_time)
-        print(type(user_statistics.last_7_days_reading_time))
         user_statistics.save()
 
 

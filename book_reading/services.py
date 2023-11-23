@@ -1,8 +1,11 @@
 import datetime
+import pytz
 
 from django.db.models import Sum
 
 from .models import ReadingSession, ReadingStatistics, UserStatistics
+
+KIEV_TZ = pytz.timezone('Europe/Kiev')
 
 
 def end_book_reading_session(session_id: int) -> None:
@@ -12,7 +15,7 @@ def end_book_reading_session(session_id: int) -> None:
     active_session = ReadingSession.objects.get(id=session_id)
     user = active_session.user
     book = active_session.book
-    active_session.end_time = datetime.datetime.now(datetime.timezone.utc)
+    active_session.end_time = datetime.datetime.now(KIEV_TZ)
     active_session.duration = active_session.end_time - active_session.start_time
     active_session.save()
 
@@ -49,7 +52,7 @@ def collect_user_reading_statistics(user_id: int, days: int):
     """
     Function for getting the total reading time of a user for a certain number of recent days
     """
-    period_of_time = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=days)
+    period_of_time = datetime.datetime.now(KIEV_TZ) - datetime.timedelta(days=days)
 
     total_duration = ReadingSession.objects.filter(
         user_id=user_id,
@@ -58,6 +61,5 @@ def collect_user_reading_statistics(user_id: int, days: int):
         total_duration=Sum('duration')
     )['total_duration']
     if not total_duration:
-        total_duration = datetime.timedelta(hours=2)
-    print(f'total_duration == {total_duration}')
+        total_duration = datetime.timedelta()
     return total_duration
