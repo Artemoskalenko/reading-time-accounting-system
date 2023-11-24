@@ -69,17 +69,17 @@ This is a simple guide how to build up an application locally. Just follow this 
 
 1. Clone the repo.
    ```sh
-   $ git clone https://github.com/Artemoskalenko/reading-time-accounting-system.git
+   git clone https://github.com/Artemoskalenko/reading-time-accounting-system.git
    ```
 2. Running a Docker container.
    ```sh
-   $ cd reading-accounting-system
+   cd reading-accounting-system
    ```
    ```sh
-   $ docker-compose build
+   docker-compose build
    ```
    ```sh
-   $ docker-compose up
+   docker-compose up
    ```
 3. After starting the Docker container, the admin user will be automatically created.
    - Login: `admin`
