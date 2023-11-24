@@ -27,8 +27,8 @@ class ReadingStatistics(models.Model):
 
 
 class UserStatistics(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='statistics')
+    user = models.OneToOneField(User, on_delete=models.CASCADE,
+                                related_name='statistics')
     total_reading_time = models.DurationField(default=timedelta())
     last_7_days_reading_time = models.DurationField(default=timedelta())
     last_30_days_reading_time = models.DurationField(default=timedelta())
-

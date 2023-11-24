@@ -20,4 +20,3 @@ admin.site.register(User, UserAdmin)
 
 admin.site.register(Book)
 admin.site.register(ReadingStatistics)
-

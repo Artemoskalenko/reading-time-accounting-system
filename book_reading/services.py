@@ -10,7 +10,8 @@ KIEV_TZ = pytz.timezone('Europe/Kiev')
 
 def end_book_reading_session(session_id: int) -> None:
     """
-    The function ends the book reading session, updates book reading statistics and general user statistics.
+    The function ends the book reading session,
+    updates book reading statistics and general user statistics.
     """
     active_session = ReadingSession.objects.get(id=session_id)
     user = active_session.user
@@ -44,13 +45,17 @@ def timedelta_to_string(timedelta):
     hours = total_seconds // 3600
     minutes = (total_seconds % 3600) // 60
     seconds = total_seconds % 60
-    result = f'{hours} hours, {minutes} min {seconds} sec' if hours else f'{minutes} min {seconds} sec'
+    if hours:
+        result = f'{hours} hours, {minutes} min {seconds} sec'
+    else:
+        result = f'{minutes} min {seconds} sec'
     return result
 
 
 def collect_user_reading_statistics(user_id: int, days: int):
     """
-    Function for getting the total reading time of a user for a certain number of recent days
+    Function for getting the total reading time of a user
+    for a certain number of recent days
     """
     period_of_time = datetime.datetime.now(KIEV_TZ) - datetime.timedelta(days=days)
 

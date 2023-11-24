@@ -46,7 +46,8 @@ class ReadingSessionAPIView(APIView):
             elif active_session:
                 end_book_reading_session(active_session.id)
                 ReadingSession.objects.create(book=book, user=request.user)
-                response = {'message': 'The previous book reading session was ended successfully, and the new book reading session started successfully'}
+                response = {'message': 'The previous book reading session was ended successfully, '
+                                       'and the new book reading session started successfully'}
             elif not active_session:
                 ReadingSession.objects.create(book=book, user=request.user)
                 response = {'message': 'Book reading session started successfully'}
@@ -68,13 +69,16 @@ class UserStatisticsAPIView(APIView):
 
     def get(self, request):
         user = request.user
-        total_reading_time = user.statistics.total_reading_time
+
         try:
-            user_statistics = UserStatistics.objects.get(user=user)
+            user_statistics = user.statistics
         except UserStatistics.DoesNotExist:
             user_statistics = UserStatistics(user=user)
+            user_statistics.save()
+        total_reading_time = user_statistics.total_reading_time
         last_7_days_reading_time = user_statistics.last_7_days_reading_time
         last_30_days_reading_time = user_statistics.last_30_days_reading_time
+
         return Response({
             'First name': user.first_name,
             'Last name': user.last_name,
@@ -94,9 +98,21 @@ class ReadingStatisticsAPIView(APIView):
     def get(self, request, *args, **kwargs):
         user = request.user
         book_id = self.kwargs['pk']
-        book = Book.objects.get(id=book_id)
-        book_serialized = BookWithoutFullDescriptionSerializer(book)
-        reading_statistics = ReadingStatistics.objects.get(user=user, book=book)
-        total_reading_time = reading_statistics.total_reading_time
-        response = {'Book': book_serialized.data, 'Total reading time': timedelta_to_string(total_reading_time)}
+
+        # Checking whether a book with this ID exists
+        try:
+            book = Book.objects.get(id=book_id)
+            book_serialized = BookWithoutFullDescriptionSerializer(book)
+
+            # Checking whether user statistics exist for this book. If not, we create it.
+            try:
+                reading_statistics = ReadingStatistics.objects.get(user=user, book=book)
+            except ReadingStatistics.DoesNotExist:
+                reading_statistics = ReadingStatistics(user=user, book=book)
+                reading_statistics.save()
+            total_reading_time = reading_statistics.total_reading_time
+            response = {'Book': book_serialized.data, 'Total reading time': timedelta_to_string(total_reading_time)}
+        except Book.DoesNotExist:
+            response = {'details': 'There is no book with this ID'}
+
         return Response(response)

@@ -13,4 +13,3 @@ class BookWithoutFullDescriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
         exclude = ['full_description']
-

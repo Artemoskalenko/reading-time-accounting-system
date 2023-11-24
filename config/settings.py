@@ -11,7 +11,7 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-30mdnn%t!!g@7aj41xu8-c*8c@d1qh-h%u%(^$o15ye$9r-ngh"
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -122,7 +122,7 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-LOGOUT_REDIRECT_URL = '/api/v1/drf-auth/login/'
+LOGOUT_REDIRECT_URL = '/drf-auth/login/'
 LOGIN_REDIRECT_URL = '/swagger/'
 
 SWAGGER_SETTINGS = {
@@ -158,6 +158,6 @@ CELERY_TIMEZONE = "Europe/Kiev"
 CELERY_BEAT_SCHEDULE = {
     "daily-collection-of-user-statistics": {
         "task": "book_reading.tasks.daily_collection_of_user_statistics",
-        "schedule": crontab(hour="01", minute="16"),
+        "schedule": crontab(hour="14", minute="59"),
     },
 }
