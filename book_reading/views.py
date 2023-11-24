@@ -39,7 +39,7 @@ class ReadingSessionAPIView(APIView):
             try:
                 book = Book.objects.get(id=pk)
             except Book.DoesNotExist:
-                return Response({'Error': 'Book does not exist'})
+                return Response({'Error': 'There is no book with this ID'})
 
             if active_session and active_session.book == book:
                 response = {'message': 'A reading session for this book is already active'}
@@ -80,6 +80,7 @@ class UserStatisticsAPIView(APIView):
         last_30_days_reading_time = user_statistics.last_30_days_reading_time
 
         return Response({
+            'Username': user.username,
             'First name': user.first_name,
             'Last name': user.last_name,
             'Date joined': user.date_joined.strftime("%Y-%m-%d %I:%M %p"),
@@ -113,6 +114,6 @@ class ReadingStatisticsAPIView(APIView):
             total_reading_time = reading_statistics.total_reading_time
             response = {'Book': book_serialized.data, 'Total reading time': timedelta_to_string(total_reading_time)}
         except Book.DoesNotExist:
-            response = {'details': 'There is no book with this ID'}
+            response = {'Error': 'There is no book with this ID'}
 
         return Response(response)
