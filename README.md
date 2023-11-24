@@ -89,6 +89,13 @@ This is a simple guide how to build up an application locally. Just follow this 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+## Testing
+
+   ```sh
+   pytest --cov
+   ```
+- Total testing coverage: 99%
+
 ## Database Structure
 
 ![db diagram](/.github/images/diagram.JPG)
