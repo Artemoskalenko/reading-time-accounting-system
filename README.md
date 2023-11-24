@@ -90,7 +90,7 @@ This is a simple guide how to build up an application locally. Just follow this 
 
 ## Database Structure
 
-![db diagram](https://raw.githubusercontent.com/Artemoskalenko/reading-time-accounting-system/main/.github/images/diagram.JPG)
+![db diagram](/.github/images/diagram.JPG)
 
 ## API Endpoints
 See auto-generated documentation for API to get all info about available resources and methods.
