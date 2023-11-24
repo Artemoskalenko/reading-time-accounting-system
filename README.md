@@ -73,7 +73,7 @@ This is a simple guide how to build up an application locally. Just follow this 
    ```
 2. Running a Docker container.
    ```sh
-   cd reading-accounting-system
+   cd reading-time-accounting-system
    ```
    ```sh
    docker-compose build
