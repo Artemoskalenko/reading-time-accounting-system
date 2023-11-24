@@ -158,6 +158,6 @@ CELERY_TIMEZONE = "Europe/Kiev"
 CELERY_BEAT_SCHEDULE = {
     "daily-collection-of-user-statistics": {
         "task": "book_reading.tasks.daily_collection_of_user_statistics",
-        "schedule": crontab(hour="14", minute="59"),
+        "schedule": crontab(hour="00", minute="00"),
     },
 }
