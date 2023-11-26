@@ -94,7 +94,7 @@ This is a simple guide how to build up an application locally. Just follow this 
    ```sh
    pytest --cov
    ```
-- Total testing coverage: 99%
+- Total testing coverage: 100%
 
 ## Database Structure
 
