@@ -45,15 +45,26 @@ def api_client():
 @pytest.fixture
 def test_user(api_client):
     """Creates a user by token"""
-    api_client.post("/auth/users/", {"username": "testusername", "password": "testpassword"})
+    response = api_client.post("/auth/users/", {"username": "testusername", "password": "testpassword"})
+    user_id = response.data["id"]
     response = api_client.post("/auth/token/login/", {"username": "testusername", "password": "testpassword"})
     api_client.credentials(HTTP_AUTHORIZATION=f"Token {response.data['auth_token']}")
+    return user_id
 
 
 @pytest.fixture
 def start_reading_session(api_client, create_book_1):
     """Begins the process of reading a book"""
     api_client.get(f"/api/v1/start-reading-session/{create_book_1.id}/")
+
+
+@pytest.fixture
+def reading_a_book_for_two_hours(api_client, create_book_1, test_user):
+    """Simulate reading a book for two hours"""
+    mocked = datetime.datetime.now() - datetime.timedelta(hours=2)
+    with mock.patch('django.utils.timezone.now', mock.Mock(return_value=mocked)):
+        api_client.get(f"/api/v1/start-reading-session/{create_book_1.id}/")
+    api_client.get(f"/api/v1/end-reading-session/")
 
 
 @pytest.mark.django_db
@@ -139,15 +150,8 @@ class TestUserReadingStatistics:
         assert response.data["Last 7 days reading time"] == timedelta_to_string(datetime.timedelta())
         assert response.data["Last 30 days reading time"] == timedelta_to_string(datetime.timedelta())
 
-    def test_user_reading_statistics(self, api_client, create_book_1, test_user):
+    def test_user_reading_statistics(self, api_client, create_book_1, test_user, reading_a_book_for_two_hours):
         """Testing general user statistics after two hours of reading a book"""
-
-        # Simulate reading a book for two hours
-        mocked = datetime.datetime.now() - datetime.timedelta(hours=2)
-        with mock.patch('django.utils.timezone.now', mock.Mock(return_value=mocked)):
-            api_client.get(f"/api/v1/start-reading-session/{create_book_1.id}/")
-        api_client.get(f"/api/v1/end-reading-session/")
-
         daily_collection_of_user_statistics()
 
         response = api_client.get(f"/api/v1/user-statistics/")

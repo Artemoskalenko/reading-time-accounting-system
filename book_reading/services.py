@@ -1,5 +1,6 @@
 import datetime
 import pytz
+from django.contrib.auth.models import User
 
 from django.db.models import Sum
 
@@ -7,6 +8,12 @@ from .models import ReadingSession, ReadingStatistics, UserStatistics, Book
 from .serializers import BookWithoutFullDescriptionSerializer
 
 KIEV_TZ = pytz.timezone('Europe/Kiev')
+
+
+def _get_user(user):
+    if type(user) == int:
+        user = User.objects.get(id=user)
+    return user
 
 
 def _end_active_reading_session(user) -> None:
@@ -80,6 +87,8 @@ def start_reading_session_and_get_message(user, book_id):
     Starts a new book reading session.
     Returns a dict with a message or with an error.
     """
+    user = _get_user(user)
+
     active_session = ReadingSession.objects.filter(user=user, end_time__isnull=True).first()
 
     try:
@@ -106,6 +115,8 @@ def end_reading_session_and_get_message(user):
     Ends the current book reading session, if one exists.
     Returns a dict with a message or with an error.
     """
+    user = _get_user(user)
+
     active_session = ReadingSession.objects.filter(user=user, end_time__isnull=True).first()
     if active_session:
         _end_active_reading_session(user=user)
@@ -117,6 +128,7 @@ def end_reading_session_and_get_message(user):
 
 def get_user_statistics(user):
     """Returns common user statistics"""
+    user = _get_user(user)
     try:
         user_statistics = user.statistics
     except UserStatistics.DoesNotExist:
@@ -129,6 +141,7 @@ def get_user_statistics(user):
 
 def get_user_reading_statistics(user, book_id):
     """Returns user statistics for a specific book"""
+    user = _get_user(user)
     try:
         book = Book.objects.get(id=book_id)
         book_serialized = BookWithoutFullDescriptionSerializer(book)
