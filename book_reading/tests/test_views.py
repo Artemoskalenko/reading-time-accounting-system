@@ -57,7 +57,7 @@ def start_reading_session(api_client, create_book_1):
 
 
 @pytest.mark.django_db
-class TestViews:
+class TestBooks:
     def test_books_url(self, api_client, create_book_1):
         response = api_client.get("/api/v1/books/")
         assert response.status_code == 200
@@ -72,6 +72,9 @@ class TestViews:
         assert response.data["short_description"] == 'test_short_description'
         assert response.data["full_description"] == 'test_full_description'
 
+
+@pytest.mark.django_db
+class TestBookReadingStatistics:
     def test_book_reading_statistics_invalid_book_id(self, create_book_1, create_book_2, api_client, test_user):
         response = api_client.get(f"/api/v1/book-reading-statistics/{create_book_2.id + 1}/")
         assert response.status_code == 200
@@ -85,6 +88,9 @@ class TestViews:
         assert response.data["Book"] == book_serialized.data
         assert response.data["Total reading time"] == timedelta_to_string(datetime.timedelta())
 
+
+@pytest.mark.django_db
+class TestBookReadingSession:
     def test_start_reading_session_invalid_book_id(self, create_book_1, create_book_2, api_client, test_user):
         response = api_client.get(f"/api/v1/start-reading-session/{create_book_2.id + 1}/")
         assert response.status_code == 200
@@ -120,6 +126,9 @@ class TestViews:
         assert response.status_code == 200
         assert response.data["message"] == "There is currently no book reading session started"
 
+
+@pytest.mark.django_db
+class TestUserReadingStatistics:
     def test_user_reading_statistics_with_zero_total_reading_time(self, api_client, create_book_1, test_user):
         """Testing general user statistics without reading the book before"""
         daily_collection_of_user_statistics()
